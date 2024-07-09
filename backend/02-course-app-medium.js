@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
-const cors = require('cors')
+const cors = require('cors');
 
 app.use(express.json());
 app.use(cors());
@@ -13,7 +13,7 @@ let COURSES = [];
 const secretKey = "superS3cr3t1"; // replace this with your own secret key
 
 const generateJwt = (user) => {
-  const payload = { username: user.username, };
+  const payload = { username: user.username };
   return jwt.sign(payload, secretKey, { expiresIn: '1h' });
 };
 
@@ -36,10 +36,15 @@ const authenticateJwt = (req, res, next) => {
   }
 };
 
-app.get('./', (req,res)=>{
+app.get('/', (req, res) => {
   console.log("hello");
+  res.send("Hello, world!");
 });
 
+app.get('/allusers', (req, res) => {
+  console.log(USERS);
+  res.json({ users: USERS });
+});
 
 app.post('/admin/signup', (req, res) => {
   const admin = req.body;
@@ -54,7 +59,7 @@ app.post('/admin/signup', (req, res) => {
 });
 
 app.post('/admin/login', (req, res) => {
-  const { username, password } = req.headers;
+  const { username, password } = req.body; // Changed from req.headers to req.body
   const admin = ADMINS.find(a => a.username === username && a.password === password);
 
   if (admin) {
@@ -102,9 +107,8 @@ app.post('/users/signup', (req, res) => {
   }
 });
 
-
 app.post('/users/login', (req, res) => {
-  const { username, password } = req.headers;
+  const { username, password } = req.body;
   const user = USERS.find(u => u.username === username && u.password === password);
   if (user) {
     const token = generateJwt(user);
@@ -123,15 +127,11 @@ app.post('/users/courses/:courseId', authenticateJwt, (req, res) => {
   const course = COURSES.find(c => c.id === courseId);
   if (course) {
     const user = USERS.find(u => u.username === req.user.username);
-    if (user) {
-      if (!user.purchasedCourses) {
-        user.purchasedCourses = [];
-      }
-      user.purchasedCourses.push(course);
-      res.json({ message: 'Course purchased successfully' });
-    } else {
-      res.status(403).json({ message: 'User not found' });
+    if (!user.purchasedCourses) {
+      user.purchasedCourses = [];
     }
+    user.purchasedCourses.push(course);
+    res.json({ message: 'Course purchased successfully' });
   } else {
     res.status(404).json({ message: 'Course not found' });
   }

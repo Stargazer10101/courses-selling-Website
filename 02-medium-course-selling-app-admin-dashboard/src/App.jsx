@@ -13,6 +13,7 @@ function App() {
     return (
         <Router>
             <Routes>
+                <Route path="/allusers" element={<allusers />} />
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
