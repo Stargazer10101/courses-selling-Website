@@ -1,11 +1,12 @@
 import React from "react";
 import { Navigate, useNavigate } from 'react-router-dom';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Card from '@mui/material/Card';
-import Snackbar from '@mui/material/Snackbar';
+//import Button from '@mui/material/Button';
+//import TextField from '@mui/material/TextField';
+//import Card from '@mui/material/Card';
+//import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useState } from "react";
+import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Link } from '@mui/material';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -55,47 +56,45 @@ function Register() {
         setOpen(false);
       };
 
-    return <div>
-        <Card variant="outlined" sx={{ maxWidth: 400, margin: 'auto', padding: 2 }}>
+      return (
         <div>
-            <center>
-            <h1>Signup</h1>
-            </center>
-            <br/>
-           <center>
-            <TextField 
-                //id="outlined-basic" 
-                label="Email" 
-                variant="outlined" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)} 
-            />
-            </center>
-            <br/>
-            <center>
-            <TextField 
-                //id="outlined-basic" 
-                label="Password" 
-                variant="outlined" 
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)} 
-            />
-            </center>
-            <br/>
-            <center>
-            <Button variant="outlined" onClick={handleRegister}>Signup</Button>
-            </center>
-            <br/>
-            Already registered? Login here: <a href="/login">Login</a>
+            <Card variant="outlined" sx={{ maxWidth: 400, margin: 'auto', padding: 2, boxShadow: 3 }}>
+                <CardContent>
+                    <Typography variant="h4" component="h1" align="center" gutterBottom>
+                        Signup
+                    </Typography>
+                    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+                        <TextField
+                            label="Email"
+                            variant="outlined"
+                            fullWidth
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <TextField
+                            label="Password"
+                            variant="outlined"
+                            type="password"
+                            fullWidth
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <Button variant="contained" color="primary" onClick={handleRegister}>
+                            Signup
+                        </Button>
+                    </Box>
+                    <Typography variant="body2" color="textSecondary" align="center" paragraph>
+                        Already registered? <Link href="/login" underline="none">Login here</Link>
+                    </Typography>
+                </CardContent>
+            </Card>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={severity}>
+                    {message}
+                </Alert>
+            </Snackbar>
         </div>
-        </Card>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity}>
-          {message}
-        </Alert>
-      </Snackbar>
-    </div>
+    );
 }
 
 export default Register;

@@ -4,7 +4,7 @@ import Landing from "./components/Landing";
 import CreateCourse from './components/CreateCourse';
 import Register from './components/Register';
 import ShowCourses from './components/ShowCourses';
-import { Navigate, useNavigate } from 'react-router-dom';
+import Buycourses from './components/Buycourses';
 
 
 
@@ -22,6 +22,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/about" element={<CreateCourse />} />
                 <Route path="/courses" element={<ShowCourses />} />
+                <Route path= "/buycourses" element= {<Buycourses/>} />
             </Routes>
         </Router>
     );

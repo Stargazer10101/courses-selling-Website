@@ -1,11 +1,12 @@
 import React from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Card from "@mui/material/Card";
-import Snackbar from "@mui/material/Snackbar";
+//import Button from "@mui/material/Button";
+//import TextField from "@mui/material/TextField";
+//import Card from "@mui/material/Card";
+//import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Alert, Link } from '@mui/material';
 
 function Login() {
   const [email, setEmail] = React.useState("");
@@ -45,7 +46,7 @@ function Login() {
         setOpen(true);
         setTimeout(() => {
           navigate("/courses");
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         // Handle errors here
@@ -58,48 +59,43 @@ function Login() {
 
   return (
     <div>
-      <Card
-        variant="outlined"
-        sx={{ maxWidth: 400, margin: "auto", padding: 2 }}
-      >
-        <div>
-          <h1>Login to dashboard</h1>
-          <br />
-          <center>
-            <TextField
-              label="Email"
-              variant="outlined"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </center>
-          <br />
-          <center>
-            <TextField
-              label="Password"
-              variant="outlined"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </center>
-          <br />
-          <center>
-            <Button variant="outlined" onClick={handleLogin}>
-              Login
-            </Button>
-          </center>
-          <br />
-          New here? <a href="/register">Register</a>
-        </div>
-      </Card>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity}>
-          {message}
-        </Alert>
-      </Snackbar>
+        <Card variant="outlined" sx={{ maxWidth: 400, margin: 'auto', padding: 2, boxShadow: 3 }}>
+            <CardContent>
+                <Typography variant="h4" component="h1" align="center" gutterBottom>
+                    Login to Dashboard
+                </Typography>
+                <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+                    <TextField
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <TextField
+                        label="Password"
+                        variant="outlined"
+                        type="password"
+                        fullWidth
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleLogin}>
+                        Login
+                    </Button>
+                </Box>
+                <Typography variant="body2" color="textSecondary" align="center" paragraph>
+                    New here? <Link href="/register" underline="none">Register</Link>
+                </Typography>
+            </CardContent>
+        </Card>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity={severity}>
+                {message}
+            </Alert>
+        </Snackbar>
     </div>
-  );
+);
 }
 
 export default Login;

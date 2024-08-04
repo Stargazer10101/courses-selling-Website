@@ -1,0 +1,6 @@
+function Buycourses() {
+        
+}
+
+
+export default Buycourses;
