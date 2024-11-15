@@ -1,17 +1,19 @@
-import React from "react";
-//import Button from "@mui/material/Button";
-//import TextField from "@mui/material/TextField";
-//import Card from "@mui/material/Card";
-//import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Alert, Link, Container, Paper } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { userState } from '../state/authState';
 import { api } from '../api';
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Link,
+} from '@mui/material';
 
-export const Login = () => {
+export const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,11 +23,11 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/users/login', { username, password });
+      const response = await api.post('/admin/login', { username, password });
       if (response.token) {
         localStorage.setItem('token', response.token);
-        setUser({ username, role: 'user', isLoading: false });
-        navigate('/courses');
+        setUser({ username, role: 'admin', isLoading: false });
+        navigate('/admin/dashboard');
       } else {
         setError('Invalid credentials');
       }
@@ -38,7 +40,7 @@ export const Login = () => {
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Login
+          Admin Login
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -73,15 +75,15 @@ export const Login = () => {
           </Button>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2">
-              Don't have an account?{' '}
-              <Link component="button" onClick={() => navigate('/register')}>
+              Don't have an admin account?{' '}
+              <Link component="button" onClick={() => navigate('/admin/register')}>
                 Register
               </Link>
             </Typography>
-            <Typography variant="body2">
-              Are you an admin?{' '}
-              <Link component="button" onClick={() => navigate('/admin/login')}>
-                Admin Login
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Not an admin?{' '}
+              <Link component="button" onClick={() => navigate('/login')}>
+                User Login
               </Link>
             </Typography>
           </Box>
@@ -89,4 +91,4 @@ export const Login = () => {
       </Paper>
     </Container>
   );
-};
+}; 

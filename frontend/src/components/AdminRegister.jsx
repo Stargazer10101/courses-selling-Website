@@ -1,36 +1,33 @@
-import React from "react";
-//import Button from "@mui/material/Button";
-//import TextField from "@mui/material/TextField";
-//import Card from "@mui/material/Card";
-//import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Alert, Link, Container, Paper } from '@mui/material';
-import { useSetRecoilState } from 'recoil';
-import { userState } from '../state/authState';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Link,
+} from '@mui/material';
 import { api } from '../api';
 
-export const Login = () => {
+export const AdminRegister = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const setUser = useSetRecoilState(userState);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/users/login', { username, password });
+      const response = await api.post('/admin/signup', { username, password });
       if (response.token) {
-        localStorage.setItem('token', response.token);
-        setUser({ username, role: 'user', isLoading: false });
-        navigate('/courses');
+        navigate('/admin/login');
       } else {
-        setError('Invalid credentials');
+        setError('Registration failed');
       }
     } catch (error) {
-      setError('Login failed. Please try again.');
+      setError('Registration failed. Please try again.');
     }
   };
 
@@ -38,7 +35,7 @@ export const Login = () => {
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Login
+          Admin Register
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -69,17 +66,11 @@ export const Login = () => {
             fullWidth
             sx={{ mt: 3, mb: 2 }}
           >
-            Login
+            Register
           </Button>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2">
-              Don't have an account?{' '}
-              <Link component="button" onClick={() => navigate('/register')}>
-                Register
-              </Link>
-            </Typography>
-            <Typography variant="body2">
-              Are you an admin?{' '}
+              Already have an admin account?{' '}
               <Link component="button" onClick={() => navigate('/admin/login')}>
                 Admin Login
               </Link>
@@ -89,4 +80,4 @@ export const Login = () => {
       </Paper>
     </Container>
   );
-};
+}; 

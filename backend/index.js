@@ -1,16 +1,44 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const cors = require('cors');
 
 app.use(express.json());
 app.use(cors());
 
-let ADMINS = [];
-let USERS = [];
-let COURSES = [];
+// Data directory and file paths
+const DATA_DIR = path.join(__dirname, 'data');
+const ADMINS_FILE = path.join(DATA_DIR, 'admins.json');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const COURSES_FILE = path.join(DATA_DIR, 'courses.json');
 
-const secretKey = "superS3cr3t1"; // replace this with your own secret key
+// Helper functions for file I/O
+const loadData = (filePath) => {
+  try {
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Error loading data from ${filePath}:`, error);
+    return [];
+  }
+};
+
+const saveData = (filePath, data) => {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error(`Error saving data to ${filePath}:`, error);
+  }
+};
+
+// Initialize data
+let ADMINS = loadData(ADMINS_FILE);
+let USERS = loadData(USERS_FILE);
+let COURSES = loadData(COURSES_FILE);
+
+const secretKey = "superS3cr3t1";
 
 const generateJwt = (user) => {
   const payload = { username: user.username };
@@ -53,6 +81,7 @@ app.post('/admin/signup', (req, res) => {
     res.status(403).json({ message: 'Admin already exists' });
   } else {
     ADMINS.push(admin);
+    saveData(ADMINS_FILE, ADMINS);
     const token = generateJwt(admin);
     res.json({ message: 'Admin created successfully', token });
   }
@@ -72,19 +101,20 @@ app.post('/admin/login', (req, res) => {
 
 app.post('/admin/courses', authenticateJwt, (req, res) => {
   const course = req.body;
-  course.id = COURSES.length + 1; 
+  course.id = Date.now(); // Use timestamp for unique ID
   COURSES.push(course);
+  saveData(COURSES_FILE, COURSES);
   res.json({ message: 'Course created successfully', courseId: course.id });
 });
 
 app.put('/admin/courses/:courseId', authenticateJwt, (req, res) => {
   const courseId = parseInt(req.params.courseId);
-
   const courseIndex = COURSES.findIndex(c => c.id === courseId);
 
   if (courseIndex > -1) {
     const updatedCourse = { ...COURSES[courseIndex], ...req.body };
     COURSES[courseIndex] = updatedCourse;
+    saveData(COURSES_FILE, COURSES);
     res.json({ message: 'Course updated successfully' });
   } else {
     res.status(404).json({ message: 'Course not found' });
@@ -102,6 +132,7 @@ app.post('/users/signup', (req, res) => {
     res.status(403).json({ message: 'User already exists' });
   } else {
     USERS.push(user);
+    saveData(USERS_FILE, USERS);
     const token = generateJwt(user);
     res.json({ message: 'User created successfully', token });
   }
@@ -131,6 +162,7 @@ app.post('/users/courses/:courseId', authenticateJwt, (req, res) => {
       user.purchasedCourses = [];
     }
     user.purchasedCourses.push(course);
+    saveData(USERS_FILE, USERS);
     res.json({ message: 'Course purchased successfully' });
   } else {
     res.status(404).json({ message: 'Course not found' });

@@ -6,95 +6,83 @@ import { Navigate, useNavigate } from 'react-router-dom';
 //import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useState } from "react";
-import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Link } from '@mui/material';
+import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Link, Container, Paper } from '@mui/material';
+import { api } from '../api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
 
 /// File is incomplete. You need to add input boxes to take input for users to register.
-function Register() {
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState("");
-    const [severity, setSeverity] = useState("success");
+export const Register = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = () => {
-        fetch("http://localhost:3000/users/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: email, password })
-        })
-          .then(response => response.json())
-          .then(data => {
-            // Handle the response data here
-            console.log(data);
-            
-              setSeverity("success");
-              setMessage(data.message);
-              setOpen(true);
-              setTimeout(() => {
-                navigate("/login");
-              }, 2000);
-        
-          })
-          .catch(error => {
-            // Handle errors here
-            console.error("Error:", error);
-            setMessage("An error occurred during registration.");
-            setSeverity("error");
-            setOpen(true);
-          });
-      };
-
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await api.post('/users/signup', { username, password });
+            if (response.token) {
+                navigate('/login');
+            } else {
+                setError('Registration failed');
+            }
+        } catch (error) {
+            setError('Registration failed. Please try again.');
         }
-        setOpen(false);
-      };
+    };
 
-      return (
-        <div>
-            <Card variant="outlined" sx={{ maxWidth: 400, margin: 'auto', padding: 2, boxShadow: 3 }}>
-                <CardContent>
-                    <Typography variant="h4" component="h1" align="center" gutterBottom>
-                        Signup
-                    </Typography>
-                    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-                        <TextField
-                            label="Email"
-                            variant="outlined"
-                            fullWidth
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <TextField
-                            label="Password"
-                            variant="outlined"
-                            type="password"
-                            fullWidth
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <Button variant="contained" color="primary" onClick={handleRegister}>
-                            Signup
-                        </Button>
+    return (
+        <Container maxWidth="sm">
+            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom align="center">
+                    Register
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        fullWidth
+                        label="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        margin="normal"
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        margin="normal"
+                        required
+                    />
+                    {error && (
+                        <Typography color="error" sx={{ mt: 2 }}>
+                            {error}
+                        </Typography>
+                    )}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Register
+                    </Button>
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Typography variant="body2">
+                            Already have an account?{' '}
+                            <Link component="button" onClick={() => navigate('/login')}>
+                                Login
+                            </Link>
+                        </Typography>
                     </Box>
-                    <Typography variant="body2" color="textSecondary" align="center" paragraph>
-                        Already registered? <Link href="/login" underline="none">Login here</Link>
-                    </Typography>
-                </CardContent>
-            </Card>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity={severity}>
-                    {message}
-                </Alert>
-            </Snackbar>
-        </div>
+                </form>
+            </Paper>
+        </Container>
     );
-}
+};
 
 export default Register;

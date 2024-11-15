@@ -1,0 +1,15 @@
+[
+  {
+    "username": "abcd@gmail.com",
+    "password": "123456",
+    "purchasedCourses": [
+      {
+        "title": "Frontend development with React",
+        "description": "This is a frontend web development course",
+        "price": 2000,
+        "imageUrl": "w",
+        "id": 1746269816199
+      }
+    ]
+  }
+]
