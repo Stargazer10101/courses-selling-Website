@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, Link as RouterLink } from 'react-router-dom';
 //import Button from '@mui/material/Button';
 //import TextField from '@mui/material/TextField';
 //import Card from '@mui/material/Card';
@@ -7,7 +7,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
 import { useState } from "react";
 import { TextField, Button, Card, CardContent, Typography, Box, Snackbar, Link, Container, Paper } from '@mui/material';
-import { api } from '../api';
+import { api } from '../utils/api';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -23,63 +23,71 @@ export const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/users/signup', { username, password });
-            if (response.token) {
-                navigate('/login');
-            } else {
-                setError('Registration failed');
-            }
-        } catch (error) {
-            setError('Registration failed. Please try again.');
+            await api.post('/users/signup', { username, password });
+            navigate('/login');
+        } catch (err) {
+            setError(err.response?.data?.message || 'An error occurred');
         }
     };
 
     return (
-        <Container maxWidth="sm">
-            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom align="center">
-                    Register
+        <Container maxWidth="sm" sx={{ py: 8 }}>
+            <Paper
+                elevation={3}
+                sx={{
+                    p: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
+                    User Registration
                 </Typography>
-                <form onSubmit={handleSubmit}>
+                {error && (
+                    <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
+                <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
                     <TextField
+                        margin="normal"
+                        required
                         fullWidth
+                        id="username"
                         label="Username"
+                        name="username"
+                        autoComplete="username"
+                        autoFocus
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        margin="normal"
-                        required
                     />
                     <TextField
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
                         margin="normal"
                         required
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="new-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
-                    {error && (
-                        <Typography color="error" sx={{ mt: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
                     <Button
                         type="submit"
-                        variant="contained"
                         fullWidth
-                        sx={{ mt: 3, mb: 2 }}
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2, py: 1.5 }}
                     >
                         Register
                     </Button>
                     <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="body2">
-                            Already have an account?{' '}
-                            <Link component="button" onClick={() => navigate('/login')}>
-                                Login
-                            </Link>
-                        </Typography>
+                        <Link component={RouterLink} to="/login" variant="body2">
+                            Already have an account? Login
+                        </Link>
                     </Box>
-                </form>
+                </Box>
             </Paper>
         </Container>
     );

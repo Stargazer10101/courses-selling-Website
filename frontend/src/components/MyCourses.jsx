@@ -1,43 +1,66 @@
 import { useState, useEffect } from 'react';
-import { Grid, Typography, Container, Box } from '@mui/material';
+import { Container, Typography, Grid, Box, Alert } from '@mui/material';
+import { api } from '../utils/api';
 import { CourseCard } from './CourseCard';
-import { api } from '../api';
 
 export const MyCourses = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchPurchasedCourses = async () => {
+    const fetchCourses = async () => {
       try {
         const response = await api.get('/users/purchasedCourses');
-        setCourses(response.purchasedCourses);
-      } catch (error) {
+        setCourses(response.data.purchasedCourses);
+      } catch (err) {
         setError('Failed to fetch purchased courses');
       }
     };
-    fetchPurchasedCourses();
+    fetchCourses();
   }, []);
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        My Courses
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom>
+          My Courses
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary">
+          Access and manage your purchased courses
+        </Typography>
+      </Box>
+
       {error && (
-        <Typography color="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
-        </Typography>
+        </Alert>
       )}
+
       {courses.length === 0 ? (
-        <Typography variant="body1" color="text.secondary">
-          You haven't purchased any courses yet.
-        </Typography>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+            backgroundColor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 1,
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            You haven't purchased any courses yet
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Browse our available courses to start learning
+          </Typography>
+        </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           {courses.map((course) => (
-            <Grid item xs={12} sm={6} md={4} key={course.id}>
-              <CourseCard course={course} showPurchaseButton={false} />
+            <Grid item key={course.id} xs={12} sm={6} md={4}>
+              <CourseCard
+                course={course}
+                isAdmin={false}
+              />
             </Grid>
           ))}
         </Grid>

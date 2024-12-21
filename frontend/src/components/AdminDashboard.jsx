@@ -1,52 +1,90 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid, Typography, Container, Button, Box } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Grid,
+  Box,
+  Button,
+  Alert,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { api } from '../utils/api';
 import { CourseCard } from './CourseCard';
-import { api } from '../api';
 
 export const AdminDashboard = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const fetchCourses = async () => {
+    try {
+      const response = await api.get('/admin/courses');
+      setCourses(response.data.courses);
+    } catch (err) {
+      setError('Failed to fetch courses');
+    }
+  };
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await api.get('/admin/courses');
-        setCourses(response.courses);
-      } catch (error) {
-        setError('Failed to fetch courses');
-      }
-    };
     fetchCourses();
   }, []);
 
+  const handleDelete = (courseId) => {
+    setCourses(courses.filter(course => course.id !== courseId));
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <Typography variant="h4" component="h1">
-          Admin Dashboard
-        </Typography>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 4,
+        }}
+      >
+        <Box>
+          <Typography variant="h3" component="h1" gutterBottom>
+            Admin Dashboard
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            Manage your courses and content
+          </Typography>
+        </Box>
         <Button
           variant="contained"
-          color="primary"
+          startIcon={<AddIcon />}
           onClick={() => navigate('/admin/add-course')}
+          sx={{ height: 'fit-content' }}
         >
           Add New Course
         </Button>
       </Box>
+
       {error && (
-        <Typography color="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
-        </Typography>
+        </Alert>
       )}
-      <Grid container spacing={3}>
-        {courses.map((course) => (
-          <Grid item xs={12} sm={6} md={4} key={course.id}>
-            <CourseCard course={course} showPurchaseButton={false} />
-          </Grid>
-        ))}
-      </Grid>
+
+      {courses.length === 0 ? (
+        <Typography variant="h6" color="text.secondary" align="center">
+          No courses created yet
+        </Typography>
+      ) : (
+        <Grid container spacing={4}>
+          {courses.map((course) => (
+            <Grid item key={course.id} xs={12} sm={6} md={4}>
+              <CourseCard
+                course={course}
+                isAdmin={true}
+                onDelete={handleDelete}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 }; 

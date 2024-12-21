@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { theme } from './theme';
 import { AppBar } from './components/AppBar';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
@@ -11,6 +13,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { AddCourse } from './components/AddCourse';
 import { useRecoilValue } from 'recoil';
 import { isUserLoggedIn, isAdminLoggedIn } from './state/authState';
+import { AuthInitializer } from './components/AuthInitializer';
 
 const ProtectedRoute = ({ children, isAdmin }) => {
   const isUser = useRecoilValue(isUserLoggedIn);
@@ -29,50 +32,54 @@ const ProtectedRoute = ({ children, isAdmin }) => {
 
 function App() {
   return (
-    <RecoilRoot>
-      <Router>
-        <AppBar />
-        <Routes>
-          <Route path="/" element={<Navigate to="/courses" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/register" element={<AdminRegister />} />
-          <Route
-            path="/courses"
-            element={
-              <ProtectedRoute>
-                <AvailableCourses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-courses"
-            element={
-              <ProtectedRoute>
-                <MyCourses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute isAdmin>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/add-course"
-            element={
-              <ProtectedRoute isAdmin>
-                <AddCourse />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </RecoilRoot>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <RecoilRoot>
+        <AuthInitializer />
+        <Router>
+          <AppBar />
+          <Routes>
+            <Route path="/" element={<Navigate to="/courses" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/register" element={<AdminRegister />} />
+            <Route
+              path="/courses"
+              element={
+                <ProtectedRoute>
+                  <AvailableCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute>
+                  <MyCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute isAdmin>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/add-course"
+              element={
+                <ProtectedRoute isAdmin>
+                  <AddCourse />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </RecoilRoot>
+    </ThemeProvider>
   );
 }
 

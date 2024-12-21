@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { userState } from '../state/authState';
-import { api } from '../api';
+import { api } from '../utils/api';
 import {
   Container,
   Paper,
+  Typography,
   TextField,
   Button,
-  Typography,
   Box,
   Link,
+  Alert,
 } from '@mui/material';
 
 export const AdminLogin = () => {
@@ -24,70 +25,80 @@ export const AdminLogin = () => {
     e.preventDefault();
     try {
       const response = await api.post('/admin/login', { username, password });
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-        setUser({ username, role: 'admin', isLoading: false });
-        navigate('/admin/dashboard');
-      } else {
-        setError('Invalid credentials');
-      }
-    } catch (error) {
-      setError('Login failed. Please try again.');
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('username', username);
+      localStorage.setItem('role', 'admin');
+      setUser({ username, role: 'admin', isLoading: false });
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'An error occurred');
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
           Admin Login
         </Typography>
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
           <TextField
+            margin="normal"
+            required
             fullWidth
+            id="username"
             label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            margin="normal"
-            required
           />
           <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             margin="normal"
             required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-          {error && (
-            <Typography color="error" sx={{ mt: 2 }}>
-              {error}
-            </Typography>
-          )}
           <Button
             type="submit"
-            variant="contained"
             fullWidth
-            sx={{ mt: 3, mb: 2 }}
+            variant="contained"
+            sx={{ mt: 3, mb: 2, py: 1.5 }}
           >
-            Login
+            Sign In
           </Button>
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2">
-              Don't have an admin account?{' '}
-              <Link component="button" onClick={() => navigate('/admin/register')}>
-                Register
-              </Link>
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Not an admin?{' '}
-              <Link component="button" onClick={() => navigate('/login')}>
-                User Login
-              </Link>
-            </Typography>
+            <Link component={RouterLink} to="/admin/register" variant="body2">
+              Don't have an admin account? Register
+            </Link>
           </Box>
-        </form>
+          <Box sx={{ textAlign: 'center', mt: 1 }}>
+            <Link component={RouterLink} to="/login" variant="body2">
+              Not an admin? User Login
+            </Link>
+          </Box>
+        </Box>
       </Paper>
     </Container>
   );

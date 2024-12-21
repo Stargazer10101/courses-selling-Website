@@ -9,6 +9,13 @@
         "price": 2000,
         "imageUrl": "w",
         "id": 1746269816199
+      },
+      {
+        "title": "React",
+        "description": "Frontend development with react",
+        "price": 2000,
+        "imageUrl": "https://imgs.search.brave.com/XsIM0cIFUhpG0EctQykr6JYUh1AlAS2rLzPIOpeFi7Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuY3RmYXNzZXRz/Lm5ldC9hcTEzbHds/NjYxNnEvMmdxVmk0/aGhqcTl2Z3ZkaDYz/VW9LWi9jNzYzYzZm/N2U5OGE4MGViMjgw/MGJiZTVlYjlkNjkw/ZC9yZWFjdF9uYXRp/dmVfemVyb190b19t/YXN0ZXJ5LnBuZz93/PTYwMCZoPTMzNiZx/PTUwJmZtPXBuZyZi/Zz10cmFuc3BhcmVu/dA",
+        "id": 1746273661838
       }
     ]
   }

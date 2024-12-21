@@ -125,6 +125,19 @@ app.get('/admin/courses', authenticateJwt, (req, res) => {
   res.json({ courses: COURSES });
 });
 
+app.delete('/admin/courses/:courseId', authenticateJwt, (req, res) => {
+  const courseId = parseInt(req.params.courseId);
+  const courseIndex = COURSES.findIndex(c => c.id === courseId);
+
+  if (courseIndex > -1) {
+    COURSES.splice(courseIndex, 1);
+    saveData(COURSES_FILE, COURSES);
+    res.json({ message: 'Course deleted successfully' });
+  } else {
+    res.status(404).json({ message: 'Course not found' });
+  }
+});
+
 app.post('/users/signup', (req, res) => {
   const user = req.body;
   const existingUser = USERS.find(u => u.username === user.username);
@@ -175,6 +188,23 @@ app.get('/users/purchasedCourses', authenticateJwt, (req, res) => {
     res.json({ purchasedCourses: user.purchasedCourses });
   } else {
     res.status(404).json({ message: 'No courses purchased' });
+  }
+});
+
+app.get('/verify-token', authenticateJwt, (req, res) => {
+  console.log('Verifying token for user:', req.user.username);
+  const user = USERS.find(u => u.username === req.user.username);
+  const admin = ADMINS.find(a => a.username === req.user.username);
+  
+  if (user) {
+    console.log('Found user:', user.username);
+    res.json({ role: 'user', username: user.username });
+  } else if (admin) {
+    console.log('Found admin:', admin.username);
+    res.json({ role: 'admin', username: admin.username });
+  } else {
+    console.log('No matching user or admin found');
+    res.status(401).json({ message: 'User not found' });
   }
 });
 

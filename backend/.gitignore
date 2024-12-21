@@ -1,1 +1,4 @@
 node_modules/
+backend/data/admins.json
+backend/data/users.json
+backend/data/courses.json

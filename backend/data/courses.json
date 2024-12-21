@@ -1,12 +1,5 @@
 [
   {
-    "title": "Frontend development with React",
-    "description": "This is a frontend web development course",
-    "price": 2000,
-    "imageUrl": "w",
-    "id": 1746269816199
-  },
-  {
     "title": "React",
     "description": "Frontend development with react",
     "price": 2000,
