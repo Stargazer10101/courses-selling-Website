@@ -46,6 +46,7 @@ This project is a full-stack web application designed for selling online courses
 
 ## Project Structure
 
+```text
 .
 ├── backend/
 │ ├── data/ # JSON files for storing data
