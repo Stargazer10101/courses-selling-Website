@@ -72,6 +72,7 @@ This project is a full-stack web application designed for selling online courses
 │ └── vite.config.js
 └── README.md # This file
 
+```
 ## Prerequisites
 
 *   [Node.js](https://nodejs.org/) (which includes npm) installed on your machine.
